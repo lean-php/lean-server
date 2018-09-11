@@ -1,2 +1,5 @@
 # Composer deps
 /vendor/
+
+# IDE/Editor settings
+/.idea/
