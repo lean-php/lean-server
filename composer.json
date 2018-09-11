@@ -21,7 +21,9 @@
             "App\\Tests\\": "app/tests/"
         }
     },
-    "require": {},
+    "require": {
+        "php-di/php-di": "^6.0"
+    },
     "require-dev": {
         "phpunit/phpunit": "^7.3"
     },

@@ -2,6 +2,8 @@
 
 require '../vendor/autoload.php';
 
-$ctrl = new \App\Controller\DefaultController();
+$container = new DI\Container();
+
+$ctrl = $container->get(\App\Controller\DefaultController::class);
 $response = $ctrl->index();
 $response->send();
