@@ -9,5 +9,9 @@ $builder->addDefinitions([
 $container = $builder->build();
 
 $ctrl = $container->get(\App\Controller\DefaultController::class);
+if (method_exists($ctrl, 'setContainer')) {
+    call_user_func([$ctrl, 'setContainer'], $container);
+}
+
 $response = $ctrl->index();
 $response->send();
