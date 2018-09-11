@@ -2,7 +2,11 @@
 
 require '../vendor/autoload.php';
 
-$container = new DI\Container();
+$builder = new DI\ContainerBuilder();
+$builder->addDefinitions([
+    League\Plates\Engine::class => DI\create()->constructor('../templates', 'phtml')
+]);
+$container = $builder->build();
 
 $ctrl = $container->get(\App\Controller\DefaultController::class);
 $response = $ctrl->index();
