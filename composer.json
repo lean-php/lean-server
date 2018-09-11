@@ -10,8 +10,22 @@
         }
     ],
     "autoload": {
-        "Lean\\": "src/",
-        "App\\": "app/"
+        "psr-4": {
+            "Lean\\": "src/",
+            "App\\": "app/src/"
+        }
     },
-    "require": {}
+    "autoload-dev": {
+        "psr-4": {
+            "Lean\\Tests\\": "tests/",
+            "App\\Tests\\": "app/tests/"
+        }
+    },
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^7.3"
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
 }
