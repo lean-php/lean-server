@@ -1,0 +1,17 @@
+{
+    "name": "lean/server",
+    "description": "Lean Web App Server",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Micha Alt",
+            "email": "php@lean-stack.de"
+        }
+    ],
+    "autoload": {
+        "Lean\\": "src/",
+        "App\\": "app/"
+    },
+    "require": {}
+}
