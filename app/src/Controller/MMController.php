@@ -10,14 +10,16 @@ namespace App\Controller;
 
 
 use Lean\Controller\ControllerTrait;
+use Psr\Log\LoggerInterface;
 
 class MMController
 {
+
     use ControllerTrait;
 
     public function index(string $rolle, int $ags )
     {
-        var_dump($ags);
+       $this->logUserAction('MM Liste von ' .$rolle);
 
         $kommune = 'Wuppertal mit Rolle ' . $rolle;
 
@@ -26,6 +28,7 @@ class MMController
 
     public function edit(string $rolle, int $ags, int $pnr, $stadt = null)
     {
+
         $kommune = 'Editieren mit Rolle ' . $rolle . ' und PNR ' .$pnr ;
 
         return $this->render('mm/liste', ['kommune' => $kommune, 'ags' => $ags]);

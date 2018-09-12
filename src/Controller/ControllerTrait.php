@@ -5,6 +5,7 @@ namespace Lean\Controller;
 use DI\Container;
 use League\Plates\Engine;
 use Lean\Http\Response;
+use Psr\Log\LoggerInterface;
 
 trait ControllerTrait
 {
@@ -14,11 +15,25 @@ trait ControllerTrait
     protected $container;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $log;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $userLog;
+
+    /**
      * @param Container $container
      */
     public function setContainer(Container $container): void
     {
         $this->container = $container;
+
+        // Set immediatly some service (always used)
+        $this->log = $container->get(LoggerInterface::class);
+        $this->userLog = $container->get('user.log');
     }
 
     public function render(string $template, array $data = [])
@@ -30,5 +45,10 @@ trait ControllerTrait
     public function getRouteParam(string $name) {
         $routeData = $this->container->get('route');
         return $routeData[$name] ?? null;
+    }
+
+    public function logUserAction(string $msg)
+    {
+        $this->userLog->info($msg);
     }
 }

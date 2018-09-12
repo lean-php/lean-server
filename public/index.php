@@ -9,6 +9,18 @@ const IS_DEBUG_ENABLED = true;
 //
 $builder = new DI\ContainerBuilder();
 $builder->addDefinitions([
+
+    'user.streams' => [
+        DI\get(\Monolog\Handler\BrowserConsoleHandler::class)
+    ],
+    'user.log' => DI\create(Monolog\Logger::class)->constructor(
+        'user', DI\get('user.streams')
+    ),
+
+    'kernel.stream' => DI\create(\Monolog\Handler\StreamHandler::class)
+        ->constructor('../var/logs/kernel.log', \Monolog\Logger::INFO),
+    \Psr\Log\LoggerInterface::class => DI\create(Monolog\Logger::class)->constructor('kernel')
+        ->method('pushHandler', DI\get('kernel.stream') ),
     League\Plates\Engine::class => DI\create()->constructor('../templates', 'phtml')
 ]);
 $container = $builder->build();

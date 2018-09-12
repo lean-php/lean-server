@@ -4,3 +4,6 @@
 
 # IDE/Editor settings
 /.idea/
+
+# Runtime artefacts
+/var/
