@@ -7,3 +7,6 @@
 
 # Runtime artefacts
 /var/
+
+# App artefacts
+/app/var/

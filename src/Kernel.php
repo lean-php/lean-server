@@ -5,6 +5,8 @@ namespace Lean;
 use DI\Container;
 use DI\ContainerBuilder;
 use League\Plates\Engine;
+use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,8 +41,17 @@ class Kernel
      *
      * @return null|string
      */
-    public function getTemplateFolder() : ?string    {
+    public function getTemplateFolder() : string    {
         return $this->getRootFolder() . '/templates';
+    }
+
+    /**
+     * Returns the config folder routing and services
+     *
+     * @return null|string
+     */
+    public function getConfigFolder() : string    {
+        return $this->getRootFolder() . '/config';
     }
 
     /**
@@ -59,10 +70,18 @@ class Kernel
      */
     private function configureContainer() {
         $containerBuilder = new ContainerBuilder();
+
+        // Lean Definitions
         $containerBuilder->addDefinitions([
             // Plates Template Engine
-            Engine::class => \DI\create()->constructor($this->getTemplateFolder(), 'phtml')
+            Engine::class => \DI\create()->constructor($this->getTemplateFolder(), 'phtml'),
+            // Default Logger
+            LoggerInterface::class => \DI\create(Logger::class)->constructor('kernel')
         ]);
+
+        // App Definitions
+        $containerBuilder->addDefinitions($this->getConfigFolder() . '/services.php');
+
         return $containerBuilder->build();
     }
 }

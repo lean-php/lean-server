@@ -14,6 +14,8 @@ class HomeController
      */
     public function index()
     {
+        $this->log('Home Controller');
+
         return $this->render('home/index');
     }
 }
