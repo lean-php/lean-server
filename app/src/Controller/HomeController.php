@@ -1,22 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Micha
- * Date: 12.09.2018
- * Time: 19:26
- */
 
 namespace App\Controller;
 
-
 use Lean\Controller\ControllerTrait;
+use Symfony\Component\HttpFoundation\Response;
 
 class HomeController
 {
     use ControllerTrait;
 
     /**
-     * @return \Lean\Http\Response
+     * @return Response
      */
     public function index()
     {

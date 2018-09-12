@@ -5,8 +5,8 @@ namespace Lean;
 use DI\Container;
 use DI\ContainerBuilder;
 use League\Plates\Engine;
-use Lean\Http\Request;
-use Lean\Http\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class Kernel
 {

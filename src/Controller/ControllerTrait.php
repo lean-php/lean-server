@@ -4,7 +4,7 @@ namespace Lean\Controller;
 
 use DI\Container;
 use League\Plates\Engine;
-use Lean\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 
 trait ControllerTrait
 {

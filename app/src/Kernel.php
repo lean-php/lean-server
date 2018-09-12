@@ -3,8 +3,8 @@
 namespace App;
 
 use App\Controller\HomeController;
-use Lean\Http\Request;
-use Lean\Http\Response;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class Kernel extends \Lean\Kernel
 {
