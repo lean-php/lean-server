@@ -17,11 +17,12 @@ $container = $builder->build();
 // Configure Routing
 //
 $dispatcher = FastRoute\cachedDispatcher(function(FastRoute\RouteCollector $r) {
-    // Thirs param as you like: string, array, object
+    // Third param as you like: string, array, object
     $r->addRoute('GET', '/', [\App\Controller\DefaultController::class, 'index']);
     $r->addRoute('GET', '/{rolle}', [\App\Controller\DefaultController::class, 'index']);
     $r->addRoute('GET', '/{rolle}/kommune', [\App\Controller\DefaultController::class, 'index']);
-    $r->addRoute('GET', '/{rolle}/kommune/{ags}/{controller}[/{action}]', [\App\Controller\DefaultController::class, 'index']);
+    $r->addRoute('GET', '/{rolle}/kommune/{ags}/mm[/{action}[/{pnr}]]', [\App\Controller\MMController::class, 'index']);
+    $r->addRoute('GET', '/kommune/mm[/{action}[/{pnr}]]', [\App\Controller\MMController::class, 'index']);
 }, [
     'cacheFile' => dirname(__DIR__) . '/var/route.cache', /* required */
     'cacheDisabled' => IS_DEBUG_ENABLED,     /* optional, enabled by default */
@@ -31,20 +32,37 @@ $dispatcher = FastRoute\cachedDispatcher(function(FastRoute\RouteCollector $r) {
 // Request/Response Cycle
 //
 $route = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-var_dump($route); exit();
+
+if( $route[0] === FastRoute\Dispatcher::NOT_FOUND ) {
+    $response = new \Lean\Http\Response('<h1>Ups, lost in space</h1>', 404);
+    $response->send();
+    exit();
+}
 
 $ctrl = $container->get($route[1][0]);
 if (method_exists($ctrl, 'setContainer')) {
     call_user_func([$ctrl, 'setContainer'], $container);
 }
 
-$action = $route[1][1];
+$action = $route[2]['action'] ?? $route[1][1];
+
+$container->set('route', DI\value($route[2]));
 
 $reflectionParams = (new ReflectionObject($ctrl))->getMethod($action)->getParameters();
+$routeParams = $route[2];
+$args = [];
 foreach ($reflectionParams as $param) {
-    // Preparing parameter injections
-    var_dump($param->getType()->getName());
+    if (array_key_exists($param->name, $routeParams)) {
+        $args[] = $routeParams[$param->name];
+    } elseif (false) {
+        // Lookup in Container
+    } elseif (false) {
+        // Lookup in Session
+    } elseif (isset($_GET[$param->name])) {
+        // Lookup in Request
+        $args[] = $_GET[$param->name];
+    }
 }
 
-$response = call_user_func([$ctrl, $action], []);
+$response = call_user_func_array([$ctrl, $action], $args);
 $response->send();
