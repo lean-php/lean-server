@@ -26,4 +26,9 @@ trait ControllerTrait
         $plates = $this->container->get(Engine::class);
         return new Response($plates->render($template, $data));
     }
+
+    public function getRouteParam(string $name) {
+        $routeData = $this->container->get('route');
+        return $routeData[$name] ?? null;
+    }
 }

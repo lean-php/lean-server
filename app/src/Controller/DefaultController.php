@@ -14,6 +14,8 @@ class DefaultController
      */
     public function index()
     {
+        var_dump('Rolle ' . $this->getRouteParam('rolle'));
+        
         return $this->render('default/index');
     }
 }
