@@ -25,5 +25,11 @@ class KernelTest extends TestCase
         $this->assertInstanceOf(Response::class, $response);
     }
 
+    public function testHasGetTemplateFolderMethod()
+    {
+        $kernel = new Kernel();
+        $folder = $kernel->getTemplateFolder();
 
+        $this->assertNull($folder);
+    }
 }
