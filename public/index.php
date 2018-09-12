@@ -10,6 +10,8 @@ const IS_DEBUG_ENABLED = true;
 $builder = new DI\ContainerBuilder();
 $builder->addDefinitions([
 
+    Psr\SimpleCache\CacheInterface::class => DI\create(\Symfony\Component\Cache\Simple\FilesystemCache::class),
+
     'user.streams' => [
         DI\get(\Monolog\Handler\BrowserConsoleHandler::class)
     ],

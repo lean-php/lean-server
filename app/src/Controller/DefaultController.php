@@ -20,6 +20,13 @@ class DefaultController
      */
     public function index()
     {
+        if (!$this->getCache()->has('date')) {
+            $this->getCache()->set('date', new \DateTime(), 3600);
+        }
+
+        $datum = $this->getCache()->get('date');
+        var_dump($datum);
+
         $this->log->info('Default Controller Constructed');
         var_dump('Rolle ' . $this->getRouteParam('rolle'));
         

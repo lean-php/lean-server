@@ -6,6 +6,7 @@ use DI\Container;
 use League\Plates\Engine;
 use Lean\Http\Response;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 
 trait ControllerTrait
 {
@@ -50,5 +51,12 @@ trait ControllerTrait
     public function logUserAction(string $msg)
     {
         $this->userLog->info($msg);
+    }
+
+    protected $cache;
+
+    public function getCache() {
+        return $this->cache ??
+            $this->cache = $this->container->get(CacheInterface::class);
     }
 }
