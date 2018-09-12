@@ -128,6 +128,15 @@ class Response
     }
 
     /**
+     * @param $name
+     * @param $value
+     */
+    public function addHeader($name, $value)
+    {
+        $this->headers[$name] = $value;
+    }
+
+    /**
      * Emits the response
      */
     public function send(): void

@@ -21,7 +21,7 @@ class DefaultController
     public function index()
     {
         if (!$this->getCache()->has('date')) {
-            $this->getCache()->set('date', new \DateTime(), 3600);
+            $this->getCache()->set('date', new \DateTime(), 60);
         }
 
         $datum = $this->getCache()->get('date');

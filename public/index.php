@@ -10,7 +10,8 @@ const IS_DEBUG_ENABLED = true;
 $builder = new DI\ContainerBuilder();
 $builder->addDefinitions([
 
-    Psr\SimpleCache\CacheInterface::class => DI\create(\Symfony\Component\Cache\Simple\FilesystemCache::class),
+    Psr\SimpleCache\CacheInterface::class => DI\create(\Symfony\Component\Cache\Simple\ArrayCache::class),
+    'output.cache' => DI\create(\Symfony\Component\Cache\Simple\FilesystemCache::class),
 
     'user.streams' => [
         DI\get(\Monolog\Handler\BrowserConsoleHandler::class)
@@ -34,6 +35,7 @@ $dispatcher = FastRoute\cachedDispatcher(function(FastRoute\RouteCollector $r) {
     // Third param as you like: string, array, object
     $r->addRoute('GET', '/', [\App\Controller\DefaultController::class, 'index']);
     $r->addRoute('GET', '/{rolle}', [\App\Controller\DefaultController::class, 'index']);
+    $r->addRoute('GET', '/caching/browser', [\App\Controller\CachedController::class, 'demo']);
     $r->addRoute('GET', '/{rolle}/kommune', [\App\Controller\DefaultController::class, 'index']);
     $r->addRoute('GET', '/{rolle}/kommune/{ags}/mm[/{action}[/{pnr}]]', [\App\Controller\MMController::class, 'index']);
     $r->addRoute('GET', '/kommune/mm[/{action}[/{pnr}]]', [\App\Controller\MMController::class, 'index']);
@@ -78,5 +80,18 @@ foreach ($reflectionParams as $param) {
     }
 }
 
-$response = call_user_func_array([$ctrl, $action], $args);
-$response->send();
+$outputCache = $container->get('output.cache');
+$cacheKey = str_replace('/', '_', $_SERVER['REQUEST_URI']);
+if ($outputCache->has($cacheKey)) {
+    echo $outputCache->get($cacheKey);
+} else {
+    $response = call_user_func_array([$ctrl, $action], $args);
+    $headers = $response->getHeaders();
+   // if (array_key_exists('Cache-Control', $headers)
+   //     && array_key_exists('s-maxage=', $headers['Cache-Control'])
+    ob_start();
+    $response->send();
+    $responseText = ob_get_flush();
+    $outputCache->set($cacheKey, $responseText, 30);
+}
+
