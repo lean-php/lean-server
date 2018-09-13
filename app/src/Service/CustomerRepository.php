@@ -43,9 +43,18 @@ class CustomerRepository
 
     }
 
-    public function create()
+    public function create($firstName,  $lastName, $email, $street, $city)
     {
 
+        $stmt = $this->pdo->prepare('INSERT INTO customer (store_id, first_name, last_name, email, address_id, active, create_date) VALUES (1, ?, ?, ?, 1, 1, NOW)');
+        $stmt->execute([ $firstName, $lastName, $email]);
+        $id = $this->pdo->lastInsertId();
+
+        $customer = new Customer();
+        $customer->setFirstName($firstName);
+        $customer->setId($id);
+
+        return $customer;
     }
 
     public function update()

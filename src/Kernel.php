@@ -69,12 +69,14 @@ class Kernel
      */
     public function handle(Request $request) : Response
     {
-        session_start();
+        //session_start();
 
         // Security: Authorization Stufe 1 (darf Rolle diese Route benutzen?)
         $route = $this->router->dispatch($request->getMethod(), $request->getPathInfo());
 
-        //
+
+
+
 
         switch ($route[0]) {
             case \FastRoute\Dispatcher::NOT_FOUND:
@@ -87,6 +89,10 @@ class Kernel
                 break;
 
             case \FastRoute\Dispatcher::FOUND:
+
+                $_ctrl = $route[1]['_ctrl'] ?? null;
+                $_action = $route[1]['_action'] ?? null;
+                $_allowedRoles = $route[1]['_roles'] ?? null;
 
                 $ctrl = $this->container->get($route[1]['_ctrl']);
 
@@ -144,7 +150,7 @@ class Kernel
      * @return null|string
      */
     public function getRootFolder() : ?string    {
-        return null;
+        return dirname(__DIR__) . '/app';
     }
 
     /**

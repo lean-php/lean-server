@@ -2,10 +2,10 @@
 
 namespace Lean\Tests;
 
-use Lean\Http\Request;
-use Lean\Http\Response;
 use Lean\Kernel;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class KernelTest extends TestCase
 {
@@ -30,6 +30,6 @@ class KernelTest extends TestCase
         $kernel = new Kernel();
         $folder = $kernel->getTemplateFolder();
 
-        $this->assertNull($folder);
+        $this->assertStringEndsWith('templates', $folder);
     }
 }

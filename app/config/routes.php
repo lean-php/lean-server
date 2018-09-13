@@ -14,14 +14,14 @@ return function (RouteCollector $r) {
       $r->addRoute('GET', '/customers/output-cache', [\App\Controller\Admin\CustomerController::class, 'outputcache']);
   });
 
-  $r->addRoute('GET', 'customer/rentals[/{id}]', [
+  $r->addRoute('GET', '/customer/rentals[/{id}]', [
       '_ctrl' => RentalController::class,
       '_action' => 'index',
       '_roles' => ['cst']
   ]);
-  $r->addRoute('GET', 'staff/customer/{id}/rental');
-  $r->addRoute('GET', 'admin/staff/{id}/rental');
+  $r->addRoute('GET', '/staff/customer/{id}/rental', []);
+  $r->addRoute('GET', '/admin/staff/{id}/rental' , []);
 
-  $r->addRoute('GET', '{rolle:staff|admin}/rentals[/{id}[/{action}]]');
+  $r->addRoute('GET', '{rolle:staff|admin}/rentals[/{id}[/{action}]]', []);
 
 };
