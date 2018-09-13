@@ -4,6 +4,7 @@ namespace Lean;
 
 use DI\Container;
 use DI\ContainerBuilder;
+use FastRoute\Dispatcher;
 use League\Plates\Engine;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -18,11 +19,23 @@ class Kernel
     protected $container;
 
     /**
+     * @var Dispatcher
+     */
+    protected $router;
+
+    /**
+     * @var bool
+     */
+    protected $debugMode;
+
+    /**
      * Kernel constructor.
      */
-    public function __construct()
+    public function __construct(bool $debug = true)
     {
+        $this->debugMode = $debug;
         $this->container = $this->configureContainer();
+        $this->router = $this->configureRouter();
     }
 
     /**
@@ -33,7 +46,32 @@ class Kernel
      */
     public function handle(Request $request) : Response
     {
-        return new Response();
+        $route = $this->router->dispatch($request->getMethod(), $request->getPathInfo());
+
+        switch ($route[0]) {
+            case \FastRoute\Dispatcher::NOT_FOUND:
+                return new Response('<body><pre>Lost in Space</pre></body>', 404);
+                break;
+
+            case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+                $allowedMethods = $route[1];
+                return new Response('<body><pre>Ups, what do you wanr?</pre></body>', 405);
+                break;
+
+            case \FastRoute\Dispatcher::FOUND:
+
+                $ctrl = $this->container->get($route[1][0]);
+
+                if(method_exists($ctrl, 'setContainer')) {
+                    call_user_func([$ctrl, 'setContainer'], $this->container );
+                }
+
+                $action = $route[1][1];
+                $args = [];
+
+                return call_user_func_array([$ctrl, $action], $args);
+                break;
+        }
     }
 
     /**
@@ -68,7 +106,7 @@ class Kernel
      *
      * @return Container
      */
-    private function configureContainer() {
+    private function configureContainer() : Container {
         $containerBuilder = new ContainerBuilder();
 
         // Lean Definitions
@@ -83,5 +121,14 @@ class Kernel
         $containerBuilder->addDefinitions($this->getConfigFolder() . '/services.php');
 
         return $containerBuilder->build();
+    }
+
+    private function configureRouter() : Dispatcher
+    {
+        $routeCollector = require $this->getConfigFolder() . '/routes.php';
+        return \FastRoute\cachedDispatcher($routeCollector, [
+            'cacheFile' => $this->getRootFolder() . '/var/cache/route.cache',
+            'cacheDisabled' => $this->debugMode,     /* optional, enabled by default */
+        ]);
     }
 }

@@ -17,19 +17,4 @@ class Kernel extends \Lean\Kernel
     {
         return dirname(__DIR__);
     }
-
-    /**
-     * The main Request - Response - Lifecyle
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function handle(Request $request): Response
-    {
-        $ctrl = new HomeController();
-        $ctrl->setContainer($this->container);
-        return $ctrl->index();
-    }
-
-
 }
