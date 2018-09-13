@@ -9,5 +9,6 @@
 </head>
 <body>
 <?= $this->section('content') ?>
+<?php Tracy\Debugger::isEnabled() && Tracy\Debugger::getBar()->render(); ?>
 </body>
 </html>

@@ -8,9 +8,11 @@ use FastRoute\Dispatcher;
 use League\Plates\Engine;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use ReflectionObject;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class Kernel
 {
@@ -67,7 +69,12 @@ class Kernel
      */
     public function handle(Request $request) : Response
     {
+        session_start();
+
+        // Security: Authorization Stufe 1 (darf Rolle diese Route benutzen?)
         $route = $this->router->dispatch($request->getMethod(), $request->getPathInfo());
+
+        //
 
         switch ($route[0]) {
             case \FastRoute\Dispatcher::NOT_FOUND:
@@ -81,14 +88,32 @@ class Kernel
 
             case \FastRoute\Dispatcher::FOUND:
 
-                $ctrl = $this->container->get($route[1][0]);
+                $ctrl = $this->container->get($route[1]['_ctrl']);
 
                 if(method_exists($ctrl, 'setContainer')) {
                     call_user_func([$ctrl, 'setContainer'], $this->container );
                 }
 
                 $action = $route[1][1];
+
+                // Resolving Controller Arguments
+                $reflectionParams = (new ReflectionObject($ctrl))->getMethod($action)->getParameters();
+                $routeParams = $route[2];
                 $args = [];
+                foreach ($reflectionParams as $param) {
+                    if ($param->getType()->getName() === Request::class) {
+                        $args[] = $request;
+                    } elseif (array_key_exists($param->name, $routeParams)) {
+                        $args[] = $routeParams[$param->name];
+                    } elseif (false) {
+                        // Lookup in Container
+                    } elseif (false) {
+                        // Lookup in Session
+                    } elseif (isset($_GET[$param->name])) {
+                        // Lookup in Request
+                        $args[] = $_GET[$param->name];
+                    }
+                }
 
                 return call_user_func_array([$ctrl, $action], $args);
                 break;
