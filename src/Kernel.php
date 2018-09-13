@@ -30,13 +30,33 @@ class Kernel
     protected $debugMode;
 
     /**
+     * @var callable[]
+     */
+    protected $asyncHandlers;
+
+    /**
      * Kernel constructor.
      */
     public function __construct(bool $debug = true)
     {
         $this->debugMode = $debug;
+        $this->asyncHandlers = [];
         $this->container = $this->configureContainer();
         $this->router = $this->configureRouter();
+
+        $this->container->set('app.kernel', $this); // Value Pattern
+    }
+
+    public function addAsyncTask(callable $handler)
+    {
+        $this->asyncHandlers[] = $handler;
+    }
+
+    public function terminate()
+    {
+        foreach ($this->asyncHandlers as $h) {
+            $h();
+        }
     }
 
     /**

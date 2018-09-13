@@ -25,6 +25,15 @@ class CustomerController
         $customers = $this->customerRepository->getAll();
         $response = $this->render('admin/customer/list', ['customers' => $customers, 'date' => $date]);
 
+        $this->container->get('app.kernel')->addAsyncTask(function () use ($customers) {
+
+            file_put_contents('/tmp/customer.xml', '<customers></customers>');
+
+        });
+
+        $this->container->get('app.kernel')->addAsyncTask(CustomerController::class.'::incRequestCount');
+        $this->container->get('app.kernel')->addAsyncTask([$this,'cleanupData']);
+
         return $response;
     }
 
@@ -67,5 +76,14 @@ class CustomerController
 
         $response->setSharedMaxAge(20);
         return $response;
+    }
+
+    public function cleanupData()
+    {
+        file_put_contents('/tmp/log.txt', 'Cleanup', FILE_APPEND);
+    }
+
+    public static function incRequestCount() {
+        file_put_contents('/tmp/log.txt', 'incRequest', FILE_APPEND);
     }
 }
