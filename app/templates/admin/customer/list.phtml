@@ -1,0 +1,26 @@
+<?php $this->layout('_layout') ?>
+
+<h2>Kundenliste (Stand: <?= $date ?>)</h2>
+<p><a href="/admin">Zurück zum Dashboard</a></p>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Vorname</th>
+        <th>Nachname</th>
+        <th>Email</th>
+        <th>Adresse</th>
+    </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($customers as $c): ?>
+        <tr>
+            <td><?= $c->getId() ?></td>
+            <td><?= $c->getFirstName() ?></td>
+            <td><?= $c->getLastName() ?></td>
+            <td><?= $c->getEmail() ?></td>
+            <td><?= $c->getStreet() . ', ' . $c->getCity() ?></td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>

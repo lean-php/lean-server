@@ -8,6 +8,7 @@ use FastRoute\Dispatcher;
 use League\Plates\Engine;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Cache\Simple\FilesystemCache;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -55,7 +56,7 @@ class Kernel
 
             case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
                 $allowedMethods = $route[1];
-                return new Response('<body><pre>Ups, what do you wanr?</pre></body>', 405);
+                return new Response('<body><pre>Ups, what do you want?</pre></body>', 405);
                 break;
 
             case \FastRoute\Dispatcher::FOUND:
@@ -102,6 +103,14 @@ class Kernel
     }
 
     /**
+     * @return Container
+     */
+    public function getContainer(): Container
+    {
+        return $this->container;
+    }
+
+    /**
      * Configures the DI Container
      *
      * @return Container
@@ -114,7 +123,9 @@ class Kernel
             // Plates Template Engine
             Engine::class => \DI\create()->constructor($this->getTemplateFolder(), 'phtml'),
             // Default Logger
-            LoggerInterface::class => \DI\create(Logger::class)->constructor('kernel')
+            LoggerInterface::class => \DI\create(Logger::class)->constructor('kernel'),
+            // Output Cache
+            'output.cache' => \DI\create(FilesystemCache::class)
         ]);
 
         // App Definitions
